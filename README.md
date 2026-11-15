@@ -4,4 +4,4 @@ A static page of Shanghai restaurants, bars and live-music venues (77 picks), wi
 
 Open it at https://roychiew-cell.github.io/shanghai-places/
 
-Photos are illustrative and come from Wikimedia Commons under their own licences; the credits are on the page.
+No venue photos are shown for now. Only pictures of the venue itself (from its own channels, Dianping or another verified source, each credited) will be added, as many as can be verified.
