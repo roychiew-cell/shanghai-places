@@ -1,7 +1,7 @@
-# Shanghai: eat, drink, go out
+# Shanghai, checked
 
-A static page of Shanghai restaurants, bars and live-music venues (77 picks), with ratings, addresses to copy for a driver, a map view (OpenStreetMap base map), and the source for each pick.
+A free guide to Shanghai for the last week of November 2026: 77 places to eat, drink and go out, 28 places to see, 18 errands (barbers, clothes, kids, IT malls), 14 facts and 5 walks, each with a seal that says what was checked and what was not, the address in Chinese for a driver, and a map (OpenStreetMap).
 
 Open it at https://roychiew-cell.github.io/shanghai-places/
 
-No venue photos are shown for now. Only pictures of the venue itself (from its own channels, Dianping or another verified source, each credited) will be added, as many as can be verified.
+Static pages, no tracking, no third-party fonts or scripts; search engines are asked to skip it. Photographs belong to their owners and are shown with credit; to ask for one to be taken down, open an issue on this repository.
