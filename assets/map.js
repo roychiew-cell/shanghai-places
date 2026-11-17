@@ -496,6 +496,16 @@
     drv.setAttribute('aria-label', 'Show the driver: ' + r.title);
     drv.innerHTML = '<svg class="i" aria-hidden="true"><use href="#i-car"/></svg>Show the driver';
     actions.appendChild(drv);
+    var amapHref = src.getAttribute('data-amap');
+    if (amapHref) {                                   // a plain link: the Amap app on a phone that has it, its website otherwise
+      var am = el('a', 'btn btn--secondary btn--sm');
+      am.setAttribute('href', amapHref);
+      am.setAttribute('target', '_blank');
+      am.setAttribute('rel', 'noopener noreferrer');
+      am.setAttribute('aria-label', 'Open in Amap: ' + r.title);
+      am.innerHTML = '<svg class="i" aria-hidden="true"><use href="#i-external"/></svg>Amap';
+      actions.appendChild(am);
+    }
     parts.push(actions);
     cardEl.innerHTML = '';
     parts.forEach(function (p) { cardEl.appendChild(p); });
