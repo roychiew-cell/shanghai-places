@@ -282,4 +282,22 @@
   window.addEventListener('pageshow', function () {
     if (!$$('dialog[open]').length) { root.classList.remove('has-sheet'); }
   });
+
+  /* The offline copy: register sw.js, which sits at the site's root while this script sits at <root>/assets/core.js. It does
+     nothing in a browser without service workers, on a file address, or when the visitor switched the copy off on the
+     "Use it offline" page (localStorage sc-offline = off). */
+  (function () {
+    if (!('serviceWorker' in navigator) || !/^https?:$/.test(location.protocol)) { return; }
+    try { if (window.localStorage.getItem('sc-offline') === 'off') { return; } } catch (e) { /* private mode: carry on */ }
+    var src = doc.currentScript && doc.currentScript.src ? doc.currentScript.src : '';
+    if (!src) {
+      var all = doc.getElementsByTagName('script');
+      for (var i = 0; i < all.length; i++) { if (/\/assets\/core\.js/.test(all[i].src)) { src = all[i].src; break; } }
+    }
+    var base = src.replace(/assets\/core\.js.*$/, '');
+    if (!src || base === src) { return; }
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register(base + 'sw.js').catch(function () { /* no offline copy: the site works as before */ });
+    });
+  }());
 }());

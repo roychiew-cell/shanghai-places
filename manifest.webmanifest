@@ -1,0 +1,25 @@
+{
+ "background_color": "#F7F4EE",
+ "description": "A guide for the last week of November 2026. Inside Shanghai only.",
+ "display": "standalone",
+ "icons": [
+  {
+   "purpose": "any",
+   "sizes": "192x192",
+   "src": "assets/icons/icon-192.png",
+   "type": "image/png"
+  },
+  {
+   "purpose": "any",
+   "sizes": "512x512",
+   "src": "assets/icons/icon-512.png",
+   "type": "image/png"
+  }
+ ],
+ "lang": "en",
+ "name": "Shanghai, checked",
+ "scope": "./",
+ "short_name": "Shanghai",
+ "start_url": "./",
+ "theme_color": "#F7F4EE"
+}
