@@ -245,7 +245,7 @@
   }
 
   function pinIcon(r, sel) {
-    var cls = 'mk' + (sel ? ' mk--sel' : '') + (r.approx ? ' mk--approx' : '');
+    var cls = 'mk' + (r.group ? ' mk--g-' + r.group : '') + (sel ? ' mk--sel' : '') + (r.approx ? ' mk--approx' : '');
     return L.divIcon({
       className: cls, iconSize: [44, 44], iconAnchor: [22, 22],
       html: '<svg class="i" aria-hidden="true"><use href="#i-' + r.glyph + '"/></svg>'

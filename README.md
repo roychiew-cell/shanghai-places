@@ -1,6 +1,6 @@
-# Shanghai, checked
+# Boys on Tour
 
-A free guide to Shanghai for the last week of November 2026: 77 places to eat, drink and go out, 28 places to see, 22 errands (barbers, clothes, kids, IT malls, video-conferencing gear), 14 facts and 5 walks, each with a seal that says what was checked and what was not, the address in Chinese for a driver, and a map (OpenStreetMap).
+A free guide to Shanghai for the last week of November 2026: 77 places to eat, drink and go out, 35 places to see, 22 errands (barbers, clothes, kids, IT malls, video-conferencing gear), 14 facts and 5 walks, each with a seal that says what was checked and what was not, the address in Chinese for a driver, and a map (OpenStreetMap).
 
 Open it at https://roychiew-cell.github.io/shanghai-places/
 

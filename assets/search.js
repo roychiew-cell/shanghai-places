@@ -38,7 +38,7 @@
   var emptyEl = doc.getElementById('search-empty');
   var errorEl = doc.getElementById('search-error');
   var GROUPS = [['eat', 'Eat and drink'], ['see', 'See'], ['errands', 'Errands']];
-  var LABELS = { checked: 'Checked', likely: 'Likely', thin: 'Thin' };
+  var LABELS = { checked: 'Checked', likely: 'Likely', thin: 'Unconfirmed' };
   var records = null;
   var loading = false;
   var typing = 0;
@@ -126,7 +126,7 @@
     return '<li class="rowcard" data-id="' + esc(rec.id) + '"><div class="rowcard__thumb">' + thumb + '</div><div>' +
       '<h3 class="rowcard__title"><a href="' + esc(root + rec.url) + '">' + title + '</a></h3>' +
       '<p class="rowcard__meta">' + esc(rec.meta) + '</p>' +
-      '<span class="status"><svg class="seal seal--sm" aria-hidden="true"><use href="#seal-' + esc(rec.status) + '"/></svg>' +
+      '<span class="status status--' + esc(rec.status) + '"><svg class="seal seal--sm" aria-hidden="true"><use href="#seal-' + esc(rec.status) + '"/></svg>' +
       '<span class="status__label">' + esc(LABELS[rec.status] || rec.status) + '</span></span></div></li>';
   }
 

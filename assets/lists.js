@@ -1,20 +1,22 @@
-/* lists.js: filters, sort, search and "Show more" for the Eat and drink page (builder U2).
+/* lists.js: filters, sort, search and "Show more" for the one long category page (Chinese, 36 places) (builder U2).
    Plain ES5 so older Android and WeChat browsers run it: no ?., no ??, no replaceAll, no modules, no arrow functions.
    The server-rendered page is complete without this file: all cards are in the HTML in the data's order, and the
    filter bar stays hidden until the page's head script adds "js" to <html>. This file only hides and reorders cards.
+   (Since 19 Nov 2026 every category is its own page, so there is no category filter: the page's switcher links to the others.)
 
    Hooks (data- attributes, never style classes):
-     [data-cards]          the card grid (data-page-size = cards shown before "Show more")
-     .card[data-section data-area data-bucket data-price data-dianping data-amap data-name data-order data-search]
-     [data-filters]        the filter bar: .chip[data-cat], #f-q, #f-area, #f-price, #f-sort, #more-filters
-     [data-count]          the polite live region "Showing 12 of 77"
+     [data-cards]          the card grid (data-page-size = cards shown before "Show more", data-label = the category's name)
+     .card[data-area data-bucket data-price data-dianping data-amap data-name data-order data-search]
+     [data-filters]        the filter bar: #f-q, #f-area, #f-price, #f-sort, #more-filters
+     [data-count]          the polite live region "Showing 12 of 36"
      [data-more] [data-more-btn] [data-more-text]   the "Show 12 more" block
      [data-clear]          clears every filter (the result bar button and the one in the empty state)
-     [data-clear-one=key]  clears one filter (cat, area, price or q), made by the empty state
+     [data-clear-one=key]  clears one filter (area, price or q), made by the empty state
      #empty                the empty state; this file writes its sentence and its buttons
 
-   The state is kept in the address: ?cat=bars&area=Huangpu&price=200-500&sort=dianping&q=noodles
-   (cat is a section id, price is a bucket such as 100-200 or 500+, sort is dianping, amap, price, price-desc or name).
+   The state is kept in the address: ?area=Huangpu&price=200-500&sort=dianping&q=noodles
+   (price is a bucket such as 100-200 or 500+, sort is dianping, amap, price, price-desc or name). An old link with ?cat=
+   never reaches this page: the Eat page's own script sends it to the right category first.
 */
 (function () {
   'use strict';
@@ -24,7 +26,8 @@
   if (!wrap || !bar) { return; }
 
   var PAGE = parseInt(wrap.getAttribute('data-page-size'), 10) || 12;
-  var KEYS = ['cat', 'area', 'price', 'sort', 'q'];
+  var KEYS = ['area', 'price', 'sort', 'q'];
+  var WHAT = wrap.getAttribute('data-label') || 'the list';       // what the empty state calls the cards: "Nothing in Chinese costs ..."
 
   function $(sel, scope) { return (scope || doc).querySelector(sel); }
   function $$(sel, scope) { return Array.prototype.slice.call((scope || doc).querySelectorAll(sel)); }
@@ -39,8 +42,6 @@
   function norm(s) { return String(s || '').toLowerCase().replace(/[‘’]/g, "'"); }
   function fmtCny(n) { return 'CNY ' + String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
 
-  var chipsEl = $('.chips', bar);
-  var chips = $$('.chip', bar);
   var qEl = $('#f-q');
   var areaEl = $('#f-area');
   var priceEl = $('#f-price');
@@ -62,7 +63,6 @@
   var cards = $$('.card', wrap).map(function (el) {
     return {
       el: el,
-      cat: el.getAttribute('data-section') || '',
       area: el.getAttribute('data-area') || '',
       bucket: el.getAttribute('data-bucket') || '',
       price: num(el, 'data-price'),
@@ -76,7 +76,7 @@
   });
   var total = cards.length;
 
-  var state = { cat: '', area: '', price: '', sort: '', q: '' };
+  var state = { area: '', price: '', sort: '', q: '' };
   var limit = PAGE;
   var current = [];            // the cards that match, in display order
   var composing = false;       // an input method is mid-word: wait for it
@@ -105,13 +105,11 @@
   }
 
   function optionValues(sel) { return $$('option', sel).map(function (o) { return o.value; }); }
-  function chipValues() { return chips.map(function (c) { return c.getAttribute('data-cat'); }); }
 
   /* ---- matching and sorting ------------------------------------------------------------------- */
   function tokensOf(q) { return norm(q).split(/\s+/).filter(function (t) { return t; }); }
 
   function matches(c, st, skip, tokens) {
-    if (st.cat && skip !== 'cat' && c.cat !== st.cat) { return false; }
     if (st.area && skip !== 'area' && c.area !== st.area) { return false; }
     if (st.price && skip !== 'price' && c.bucket !== st.price) { return false; }
     if (st.q && skip !== 'q') {
@@ -148,18 +146,13 @@
   }
 
   /* ---- the empty state: say which filter is the cause, with real figures from the cards -------- */
-  function chipLabel(v) {
-    var c = null;
-    chips.forEach(function (ch) { if (ch.getAttribute('data-cat') === v) { c = ch; } });
-    return c ? c.getAttribute('data-label') : v;
-  }
   function optionAttr(sel, v, attr) {
     var out = v;
     $$('option', sel).forEach(function (o) { if (o.value === v) { out = o.getAttribute(attr) || o.textContent; } });
     return out;
   }
   function subject(st, skip) {
-    var s = (st.cat && skip !== 'cat') ? chipLabel(st.cat) : 'the list';
+    var s = WHAT;
     if (st.area && skip !== 'area') { s += ' in ' + optionAttr(areaEl, st.area, 'data-label'); }
     if (st.q && skip !== 'q') { s += ' matching “' + st.q + '”'; }
     return s;
@@ -211,14 +204,6 @@
                  key: 'q', label: 'Clear search' };
       }
     }
-    if (st.cat) {
-      base = pick(st, 'cat');
-      if (base.length) {
-        return { text: 'No ' + chipLabel(st.cat) + ' place matches the other filters, but ' + base.length +
-                       (base.length === 1 ? ' place in another group does.' : ' places in other groups do.'),
-                 key: 'cat', label: 'Clear group' };
-      }
-    }
     var fallback = st.q ? 'Nothing matches “' + st.q + '”. Try a dish, a street or the Chinese name.'
              : 'No place matches all of these filters. Remove one to see more.';
     return { text: fallback, key: null, label: '' };
@@ -249,7 +234,7 @@
   }
 
   /* ---- drawing ----------------------------------------------------------------------------------- */
-  function anyFilter() { return !!(state.cat || state.area || state.price || state.q); }
+  function anyFilter() { return !!(state.area || state.price || state.q); }
 
   function setCount(shown, matchedN) {
     if (!countEl) { return; }
@@ -290,9 +275,6 @@
     }
 
     // keep the controls in step with the state
-    chips.forEach(function (ch) {
-      ch.setAttribute('aria-pressed', ((state.cat || 'all') === ch.getAttribute('data-cat')) ? 'true' : 'false');
-    });
     if (areaEl && areaEl.value !== state.area) { areaEl.value = state.area; }
     if (priceEl && priceEl.value !== state.price) { priceEl.value = state.price; }
     if (sortEl && sortEl.value !== state.sort) { sortEl.value = state.sort; }
@@ -307,14 +289,6 @@
   function change(reorder) { limit = PAGE; draw(reorder !== false); }
 
   /* ---- events -------------------------------------------------------------------------------------- */
-  bar.addEventListener('click', function (e) {
-    var ch = closest(e.target, '.chip');
-    if (!ch) { return; }
-    var v = ch.getAttribute('data-cat');
-    state.cat = v === 'all' ? '' : v;
-    change();
-  });
-
   if (areaEl) { areaEl.addEventListener('change', function () { state.area = areaEl.value; change(); }); }
   if (priceEl) { priceEl.addEventListener('change', function () { state.price = priceEl.value; change(); }); }
   if (sortEl) { sortEl.addEventListener('change', function () { state.sort = sortEl.value; change(); }); }
@@ -341,7 +315,7 @@
       state[one.getAttribute('data-clear-one')] = '';
       if (one.getAttribute('data-clear-one') === 'q' && qEl) { qEl.value = ''; }
     } else {
-      state.cat = ''; state.area = ''; state.price = ''; state.q = '';
+      state.area = ''; state.price = ''; state.q = '';
       if (qEl) { qEl.value = ''; }
     }
     change();
@@ -375,7 +349,6 @@
 
   /* ---- start: read the address, validate each value against what the page offers --------------------- */
   var q0 = parseQuery();
-  if (q0.cat && q0.cat !== 'all' && chipValues().indexOf(q0.cat) !== -1) { state.cat = q0.cat; }
   if (q0.area && areaEl && optionValues(areaEl).indexOf(q0.area) !== -1) { state.area = q0.area; }
   if (q0.price && priceEl && optionValues(priceEl).indexOf(q0.price) !== -1) { state.price = q0.price; }
   if (q0.sort && sortEl && optionValues(sortEl).indexOf(q0.sort) !== -1) { state.sort = q0.sort; }
@@ -383,13 +356,4 @@
   if (qEl) { qEl.value = state.q; }
   if (moreFilters && wide && !wide.matches && !(state.area || state.price || state.sort)) { moreFilters.open = false; }
   draw(true);
-
-  // a chip picked from the address may be off-screen in the sideways row: bring it into view
-  if (state.cat && chipsEl) {
-    chips.forEach(function (ch) {
-      if (ch.getAttribute('data-cat') === state.cat) {
-        chipsEl.scrollLeft += ch.getBoundingClientRect().left - chipsEl.getBoundingClientRect().left - 16;
-      }
-    });
-  }
 }());
